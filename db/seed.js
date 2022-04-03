@@ -125,63 +125,30 @@ const {
     }
   }
   
-  async function createPostTag(postId, tagId) {
+  async function createInitialTags() {
     try {
-      await client.query(`
-        INSERT INTO post_tags("postId", "tagId")
-        VALUES ($1, $2)
-        ON CONFLICT ("postId", "tagId") DO NOTHING;
-      `, [postId, tagId]);
+      console.log("Starting to create tags...");
+  
+      const [happy, sad, inspo, catman] = await createTags([
+        '#happy', 
+        '#worst-day-ever', 
+        '#youcandoanything',
+        '#catmandoeverything'
+      ]);
+  
+      const [postOne, postTwo, postThree] = await getAllPosts();
+  
+      await addTagsToPost(postOne.id, [happy, inspo]);
+      await addTagsToPost(postTwo.id, [sad, inspo]);
+      await addTagsToPost(postThree.id, [happy, catman, inspo]);
+  
+      console.log("Finished creating tags!");
     } catch (error) {
+      console.log("Error creating tags!");
       throw error;
     }
   }
-
-  async function addTagsToPost(postId, tagList) {
-    try {
-      const createPostTagPromises = tagList.map(
-        tag => createPostTag(postId, tag.id)
-      );
   
-      await Promise.all(createPostTagPromises);
-  
-      return await getPostById(postId);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async function getPostById(postId) {
-    try {
-      const { rows: [ post ]  } = await client.query(`
-        SELECT *
-        FROM posts
-        WHERE id=$1;
-      `, [postId]);
-  
-      const { rows: tags } = await client.query(`
-        SELECT tags.*
-        FROM tags
-        JOIN post_tags ON tags.id=post_tags."tagId"
-        WHERE post_tags."postId"=$1;
-      `, [postId])
-  
-      const { rows: [author] } = await client.query(`
-        SELECT id, username, name, location
-        FROM users
-        WHERE id=$1;
-      `, [post.authorId])
-  
-      post.tags = tags;
-      post.author = author;
-  
-      delete post.authorId;
-  
-      return post;
-    } catch (error) {
-      throw error;
-    }
-  }
 
   async function rebuildDB() {
     try {
@@ -191,6 +158,7 @@ const {
       await createTables();
       await createInitialUsers();
       await createInitialPosts();
+      await createInitialTags();
     } catch (error) {
       console.log("Error during rebuildDB")
       throw error;
