@@ -8,11 +8,11 @@ postsRouter.use((req, res, next) => {
   next(); // THIS IS DIFFERENT
 });
 
-postsRouter.get('/api/posts', async (req, res, next) => {
+postsRouter.get('/', async (req, res, next) => {
     const users = await getAllPosts();
   
     res.send({
-      posts: []
+      users
     });
   });
 

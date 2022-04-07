@@ -10,7 +10,8 @@ usersRouter.use((req, res, next) => {
 
 usersRouter.get('/', async (req, res, next) => {
     const users = await getAllUsers();
-  
+  //router will not end without "res.send"
+  //make it the last thing in the route
     res.send({
       users
     });

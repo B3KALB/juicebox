@@ -8,12 +8,10 @@ tagsRouter.use((req, res, next) => {
   next(); // THIS IS DIFFERENT
 });
 
-tagsRouter.get('/api/tags', async (req, res, next) => {
+tagsRouter.get('/', async (req, res, next) => {
     const users = await getAllTags();
   
-    res.send({
-      tags: []
-    });
+    res.send(users);
   });
 
 
