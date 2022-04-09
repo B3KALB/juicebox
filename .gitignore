@@ -1,1 +1,5 @@
+# most important
+.env
+# not nessasery
 node_modules
+bundle.js

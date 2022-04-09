@@ -1,9 +1,12 @@
-
+require('dotenv').config();
+// EVERYTHING ELSE
 const express = require('express');
 const server = express();
 const morgan = require('morgan');
+const bodyParser = require("body-parser");
 const { client } = require('./db');
 const jwt = require('jsonwebtoken');
+
 
 const token = jwt.sign({ id: 3, username: 'joshua' }, 'server secret');
 token; // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Impvc2h1YSIsImlhdCI6MTU4ODAyNDQwNn0.sKuQjJRrTjmr0RiDqEPJQcTliB9oMACbJmoymkjph3Q'
@@ -19,7 +22,7 @@ jwt.verify(token, 'server secret');
 
 client.connect();
 server.use(morgan('dev'));
-
+server.use(bodyParser.json())
 server.use(express.json())
 
 // stuff above here
