@@ -80,6 +80,22 @@ postsRouter.get('/', async (req, res, next) => {
     });
 });
 
+postsRouter.get('/', async (req, res, next) => {
+  try {
+    const allPosts = await getAllPosts();
+
+    const posts = allPosts.filter(post => {
+      return post.active || (req.user && post.author.id === req.user.id);
+    });
+
+    res.send({
+      posts
+    });
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
 postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
   try {
     const post = await getPostById(req.params.postId);
